@@ -9,25 +9,37 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useQuizStore } from '@/stores/quiz.provider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { QuizSchema } from './types';
+import { Quiz, QuizSchema } from './types';
 
-export const QuizForm = () => {
+export const QuizForm = ({ data }: { data?: Quiz }) => {
+	const { createQuiz } = useQuizStore((store) => store);
+
+	const isEdit = !!data;
+
 	const form = useForm<z.infer<typeof QuizSchema>>({
 		resolver: zodResolver(QuizSchema),
-		defaultValues: {},
+		defaultValues: {
+			title: data?.title ?? '',
+			description: data?.description ?? '',
+			url: data?.url ?? '',
+			questions_answers: data?.questions_answers ?? [],
+		},
 	});
 
+	console.log('Errors: ', form.formState.errors);
 	function onSubmit(values: z.infer<typeof QuizSchema>) {
 		// ✅ This will be type-safe and validated.
 		console.log(values);
+		setTimeout(() => createQuiz(values), 1000);
 	}
 
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+			<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
 				<FormField
 					control={form.control}
 					name='title'
@@ -67,7 +79,9 @@ export const QuizForm = () => {
 						</FormItem>
 					)}
 				/>
-				<Button type='submit'>Submit</Button>
+				<Button type='submit'>
+					{form.formState.isSubmitting ? 'Loading...' : 'Submit'}
+				</Button>
 			</form>
 		</Form>
 	);

@@ -16,16 +16,16 @@ const QuizQuestionSchema = z.object({
 });
 
 export const QuizSchema = z.object({
-	created: z.string(),
+	created: z.string().optional(),
 	description: z.string(),
-	id: z.number(),
-	modified: z.string(),
-	questions_answers: z.array(QuizQuestionSchema),
-	score: z.null(),
+	id: z.number().optional(),
+	modified: z.string().optional(),
+	questions_answers: z.array(QuizQuestionSchema).optional(),
+	score: z.number().optional(),
 	title: z.string(),
-	url: z.string().url(),
+	// make sure url is youtube url
+	url: z.string().regex(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+/),
 });
-
 
 export type QuizAnswer = {
 	id: number;
@@ -43,12 +43,12 @@ export type QuizQuestion = {
 };
 
 export type Quiz = {
-	created: string;
+	created?: string;
 	description: string;
-	id: number;
-	modified: string;
-	questions_answers: QuizQuestion[];
-	score: null;
+	id?: number;
+	modified?: string;
+	questions_answers?: QuizQuestion[];
+	score?: number | null;
 	title: string;
 	url: string;
 };
