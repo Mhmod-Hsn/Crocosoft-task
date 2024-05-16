@@ -238,21 +238,6 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 											)}
 										/>
 										<div className='flex space-x-4 items-center mt-2'>
-											{question.answers.length !== 1 && (
-												<Button
-													className=' text-red-700'
-													size='sm'
-													variant='link'
-													type='button'
-													onClick={() =>
-														handleDeleteOption(questionIdx, answerIdx)
-													}
-												>
-													<X size={16} className='mr-2' />
-													Remove Answer
-												</Button>
-											)}
-
 											<div className='flex items-center space-x-2'>
 												<Switch
 													id={`questions_answers.${questionIdx}.answers.${answerIdx}`}
@@ -268,6 +253,20 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 													Correct answer
 												</Label>
 											</div>
+											{question.answers.length !== 1 && (
+												<Button
+													className=' text-red-700 h-4'
+													size='sm'
+													variant='link'
+													type='button'
+													onClick={() =>
+														handleDeleteOption(questionIdx, answerIdx)
+													}
+												>
+													<X size={16} className='mr-2' />
+													Remove Answer
+												</Button>
+											)}
 										</div>
 									</div>
 								))}

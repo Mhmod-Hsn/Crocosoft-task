@@ -12,6 +12,15 @@ export const ListQuizzes = () => {
 		compareDates(a.modified, b.modified)
 	);
 
+	if (!quizzes.length) {
+		return (
+			<div className='flex flex-col text-center gap-3 p-4'>
+				<h1 className='text-3xl font-bold'>No Quizzes Found</h1>
+				<p className='text-lg'>Please create a new quiz</p>
+			</div>
+		);
+	}
+
 	return (
 		<div className='grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3 p-3'>
 			{orderedQuizzes.map((quiz) => (
