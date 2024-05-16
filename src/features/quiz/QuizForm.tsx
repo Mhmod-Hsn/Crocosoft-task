@@ -49,7 +49,6 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 			id: data?.id ?? generateId(),
 			title: data?.title ?? '',
 			description: data?.description ?? '',
-			score: data?.score ?? 0,
 			url: data?.url ?? '',
 			questions_answers: data?.questions_answers ?? [newQuestion()],
 		},
@@ -161,25 +160,6 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 							<FormLabel>Url</FormLabel>
 							<FormControl>
 								<Input placeholder='Url' {...field} />
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-				<FormField
-					control={form.control}
-					name='score'
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Score</FormLabel>
-							<FormControl>
-								<Input
-									{...field}
-									value={Number(field.value)}
-									onChange={(e) => field.onChange(Number(e.target.value))}
-									type='number'
-									placeholder='Score'
-								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>

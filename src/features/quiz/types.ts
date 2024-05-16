@@ -19,7 +19,7 @@ export const QuizSchema = z.object({
 	id: z.number(),
 	title: z.string().min(1),
 	description: z.string().min(1),
-	score: z.number().min(0).max(100).optional(),
+	score: z.number().optional(),
 	// make sure url is youtube url
 	url: z
 		.string()
