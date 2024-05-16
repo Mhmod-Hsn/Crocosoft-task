@@ -12,11 +12,15 @@ export interface QuizStoreProviderProps {
 export const QuizStoreProvider = ({ children }: QuizStoreProviderProps) => {
 	const storeRef = useRef<StoreApi<Store>>();
 	if (!storeRef.current) {
+		// @ts-expect-error because of using persist
 		storeRef.current = createQuizStore();
 	}
 
 	return (
-		<QuizStoreContext.Provider value={storeRef.current}>
+		<QuizStoreContext.Provider
+			// @ts-expect-error because of using persist
+			value={storeRef.current}
+		>
 			{children}
 		</QuizStoreContext.Provider>
 	);
