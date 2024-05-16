@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import {
 	Form,
 	FormControl,
+	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -80,23 +81,12 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 	};
 
 	const handleDeleteOption = (questionIdx: number, answerIdx: number) => {
-		const deletedOptionWasCorrect = form.getValues(
-			`questions_answers.${questionIdx}.answers.${answerIdx}.is_true`
-		);
-
 		form.setValue(
 			`questions_answers.${questionIdx}.answers`,
 			form
 				.getValues(`questions_answers.${questionIdx}.answers`)
 				?.filter((_, index) => index !== answerIdx)
 		);
-
-		// if the option is selected as correct answer, we need to select a new one as the correct answer
-		if (deletedOptionWasCorrect) {
-			setTimeout(() => {
-				markAnswerAsTrue(questionIdx, 0);
-			}, 100);
-		}
 	};
 
 	const markAnswerAsTrue = (questionIdx: number, answerIdx: number) => {
@@ -176,30 +166,22 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 							<FormControl>
 								<Input placeholder='Url' {...field} />
 							</FormControl>
+							<FormDescription>
+								{field.value && (
+									<a
+										href={field.value}
+										rel='noreferrer'
+										target='_blank'
+										className='underline underline-offset-2'
+									>
+										Explore URL
+									</a>
+								)}
+							</FormDescription>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
-				<FormField
-					control={form.control}
-					name='score'
-					render={({ field }) => (
-						<FormItem>
-							<FormLabel>Score</FormLabel>
-							<FormControl>
-								<Input
-									{...field}
-									value={Number(field.value)}
-									onChange={(e) => field.onChange(Number(e.target.value))}
-									type='number'
-									placeholder='Score'
-								/>
-							</FormControl>
-							<FormMessage />
-						</FormItem>
-					)}
-				/>
-
 				{/* //*Questions */}
 				<div className=''>
 					<p className='text-sm font-semibold'>Questions & Answers</p>
@@ -264,20 +246,24 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 													Correct answer
 												</Label>
 											</div>
-											{question.answers.length !== 1 && (
-												<Button
-													className='text-red-700'
-													size='sm'
-													variant='ghost'
-													type='button'
-													onClick={() =>
-														handleDeleteOption(questionIdx, answerIdx)
-													}
-												>
-													<X size={16} className='mr-2' />
-													Remove Answer
-												</Button>
-											)}
+											{/* dont delete the correct answer */}
+											{question.answers.length !== 1 &&
+												!form.getValues(
+													`questions_answers.${questionIdx}.answers.${answerIdx}.is_true`
+												) && (
+													<Button
+														className='text-red-700'
+														size='sm'
+														variant='ghost'
+														type='button'
+														onClick={() =>
+															handleDeleteOption(questionIdx, answerIdx)
+														}
+													>
+														<X size={16} className='mr-2' />
+														Remove Answer
+													</Button>
+												)}
 										</div>
 									</div>
 								))}

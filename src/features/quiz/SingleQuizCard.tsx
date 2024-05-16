@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const SingleQuizCard = ({
-	data: { id, title, modified, description, score },
+	data: { id, title, modified, description, questions_answers },
 }: Props) => {
 	const navigate = useNavigate();
 	const { deleteQuiz } = useQuizStore((store) => store);
@@ -29,8 +29,8 @@ export const SingleQuizCard = ({
 				<h6 className='font-semibold'>{title}</h6>
 				<p className='text-xs'>{modified}</p>
 			</div>
-			<p className='text-sm'>{description}</p>{' '}
-			<p className='font-bold mt-2'>{score || 0}/100</p>
+			<p className='text-sm'>{description}</p>
+			<p className='font-bold mt-2'>{questions_answers.length} Questions</p>
 			<Button
 				className='bg-red-500 hover:bg-red-700 
         absolute bottom-2 right-2 opacity-0 group-hover:opacity-100'
