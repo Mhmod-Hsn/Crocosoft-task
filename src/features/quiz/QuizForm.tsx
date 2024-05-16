@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Quiz, QuizSchema } from '@/features/quiz/types';
+import { generateId } from '@/lib/utils';
 import { ROUTES } from '@/routes';
 import { useQuizStore } from '@/stores/quiz.provider';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -45,7 +46,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 	const form = useForm<z.infer<typeof QuizSchema>>({
 		resolver: zodResolver(QuizSchema),
 		defaultValues: {
-			id: data?.id ?? undefined,
+			id: data?.id ?? generateId(),
 			title: data?.title ?? '',
 			description: data?.description ?? '',
 			score: data?.score ?? 0,

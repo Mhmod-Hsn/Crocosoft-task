@@ -16,7 +16,7 @@ const QuizQuestionSchema = z.object({
 });
 
 export const QuizSchema = z.object({
-	id: z.number().optional(),
+	id: z.number(),
 	title: z.string().min(1),
 	description: z.string().min(1),
 	score: z.number().min(0).max(100).optional(),
