@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Quiz, QuizSchema } from '@/features/quiz/types';
+import { Quiz, QuizAnswer, QuizSchema } from '@/features/quiz/types';
 import { generateId } from '@/lib/utils';
 import { ROUTES } from '@/routes';
 import { useQuizStore } from '@/stores/quiz.provider';
@@ -22,14 +22,14 @@ import { z } from 'zod';
 
 const newAnswer = () => {
 	return {
-		id: 0,
+		id: generateId(),
 		text: '',
 		is_true: false,
 	};
 };
 const newQuestion = () => {
 	return {
-		id: 0,
+		id: generateId(),
 		text: '',
 		answer_id: null,
 		feedback_false: '',
@@ -65,7 +65,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 	const handleAddingNewAnswerOption = (id: number) => {
 		form.setValue(`questions_answers.${id}.answers`, [
 			...(form.getValues(`questions_answers.${id}.answers`) || []),
-			{ id: 0, text: '', is_true: false },
+			newAnswer(),
 		]);
 	};
 
@@ -81,23 +81,28 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 			`questions_answers.${questionIdx}.answers`,
 			form
 				.getValues(`questions_answers.${questionIdx}.answers`)
-				?.filter((q, index) => index !== answerIdx)
+				?.filter((_, index) => index !== answerIdx)
 		);
 	};
 
-	const markAnswerAsTrue = (questionId: number, answerId: number) => {
+	const markAnswerAsTrue = (
+		questionIdx: number,
+		answerIdx: number,
+		answer: QuizAnswer
+	) => {
 		// disable other answers
 		const answers =
-			form.getValues(`questions_answers.${questionId}.answers`) || [];
-		answers.forEach((element, index) => {
+			form.getValues(`questions_answers.${questionIdx}.answers`) || [];
+		answers.forEach((_, index) => {
 			form.setValue(
-				`questions_answers.${questionId}.answers.${index}.is_true`,
+				`questions_answers.${questionIdx}.answers.${index}.is_true`,
 				false
 			);
 		});
 
+		// set correct value
 		form.setValue(
-			`questions_answers.${questionId}.answers.${answerId}.is_true`,
+			`questions_answers.${questionIdx}.answers.${answerIdx}.is_true`,
 			true
 		);
 	};
@@ -194,6 +199,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 							key={`question-${questionIdx}`}
 							className='mb-8 mt-2 border rounded p-2 bg-slate-50'
 						>
+							{question.id}
 							<FormField
 								control={form.control}
 								name={`questions_answers.${questionIdx}.text`}
@@ -217,6 +223,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 								{/* Render Answers */}
 								{(question.answers || []).map((answer, answerIdx) => (
 									<div key={`qestion-${questionIdx}-answer-${answerIdx}`}>
+										{answer.id}
 										<FormField
 											control={form.control}
 											name={`questions_answers.${questionIdx}.answers.${answerIdx}.text`}
@@ -253,7 +260,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 													id={`questions_answers.${questionIdx}.answers.${answerIdx}`}
 													checked={answer.is_true}
 													onCheckedChange={() =>
-														markAnswerAsTrue(questionIdx, answerIdx)
+														markAnswerAsTrue(questionIdx, answerIdx, answer)
 													}
 												/>
 												<Label

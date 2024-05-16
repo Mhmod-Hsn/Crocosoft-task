@@ -7,7 +7,7 @@ const QuizAnswerSchema = z.object({
 });
 
 const QuizQuestionSchema = z.object({
-	answer_id: z.null(),
+	answer_id: z.number().or(z.null()),
 	answers: z.array(QuizAnswerSchema),
 	feedback_false: z.string().min(1),
 	feedback_true: z.string().min(1),
@@ -38,7 +38,7 @@ export type QuizAnswer = {
 };
 
 export type QuizQuestion = {
-	answer_id: null;
+	answer_id: number;
 	answers: QuizAnswer[];
 	feedback_false: string;
 	feedback_true: string;
@@ -51,7 +51,7 @@ export type Quiz = {
 	description: string;
 	id?: number;
 	modified?: string;
-	questions_answers?: QuizQuestion[];
+	questions_answers: QuizQuestion[];
 	score?: number | null;
 	title: string;
 	url: string;
