@@ -80,12 +80,23 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 	};
 
 	const handleDeleteOption = (questionIdx: number, answerIdx: number) => {
+		const deletedOptionWasCorrect = form.getValues(
+			`questions_answers.${questionIdx}.answers.${answerIdx}.is_true`
+		);
+
 		form.setValue(
 			`questions_answers.${questionIdx}.answers`,
 			form
 				.getValues(`questions_answers.${questionIdx}.answers`)
 				?.filter((_, index) => index !== answerIdx)
 		);
+
+		// if the option is selected as correct answer, we need to select a new one as the correct answer
+		if (deletedOptionWasCorrect) {
+			setTimeout(() => {
+				markAnswerAsTrue(questionIdx, 0);
+			}, 100);
+		}
 	};
 
 	const markAnswerAsTrue = (questionIdx: number, answerIdx: number) => {
