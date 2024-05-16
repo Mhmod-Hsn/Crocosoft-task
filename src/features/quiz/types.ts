@@ -38,7 +38,7 @@ export type QuizAnswer = {
 };
 
 export type QuizQuestion = {
-	answer_id: number;
+	answer_id: number | null;
 	answers: QuizAnswer[];
 	feedback_false: string;
 	feedback_true: string;

@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Quiz, QuizAnswer, QuizSchema } from '@/features/quiz/types';
+import { Quiz, QuizSchema } from '@/features/quiz/types';
 import { generateId } from '@/lib/utils';
 import { ROUTES } from '@/routes';
 import { useQuizStore } from '@/stores/quiz.provider';
@@ -20,11 +20,11 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
-const newAnswer = () => {
+const newAnswer = (isTrue: boolean = false) => {
 	return {
 		id: generateId(),
 		text: '',
-		is_true: false,
+		is_true: isTrue,
 	};
 };
 const newQuestion = () => {
@@ -34,7 +34,7 @@ const newQuestion = () => {
 		answer_id: null,
 		feedback_false: '',
 		feedback_true: '',
-		answers: [newAnswer()],
+		answers: [newAnswer(true)],
 	};
 };
 
@@ -85,11 +85,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 		);
 	};
 
-	const markAnswerAsTrue = (
-		questionIdx: number,
-		answerIdx: number,
-		answer: QuizAnswer
-	) => {
+	const markAnswerAsTrue = (questionIdx: number, answerIdx: number) => {
 		// disable other answers
 		const answers =
 			form.getValues(`questions_answers.${questionIdx}.answers`) || [];
@@ -109,7 +105,6 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 
 	const questionsWatch = form.watch('questions_answers');
 
-	console.log('Errors: ', form.formState.errors);
 	async function onSubmit(values: z.infer<typeof QuizSchema>) {
 		// ✅ This will be type-safe and validated.
 		console.log(values);
@@ -199,7 +194,6 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 							key={`question-${questionIdx}`}
 							className='mb-8 mt-2 border rounded p-2 bg-slate-50'
 						>
-							{question.id}
 							<FormField
 								control={form.control}
 								name={`questions_answers.${questionIdx}.text`}
@@ -223,7 +217,6 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 								{/* Render Answers */}
 								{(question.answers || []).map((answer, answerIdx) => (
 									<div key={`qestion-${questionIdx}-answer-${answerIdx}`}>
-										{answer.id}
 										<FormField
 											control={form.control}
 											name={`questions_answers.${questionIdx}.answers.${answerIdx}.text`}
@@ -260,7 +253,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 													id={`questions_answers.${questionIdx}.answers.${answerIdx}`}
 													checked={answer.is_true}
 													onCheckedChange={() =>
-														markAnswerAsTrue(questionIdx, answerIdx, answer)
+														markAnswerAsTrue(questionIdx, answerIdx)
 													}
 												/>
 												<Label
