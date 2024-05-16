@@ -1,19 +1,20 @@
 import { cn } from '@/lib/utils';
 import { ROUTES } from '@/routes';
 import { Link, NavLink } from 'react-router-dom';
+import logo from '../../assets/images/logo.webp';
 import { Button } from '../ui/button';
 
 export const Navbar = () => {
 	return (
 		<>
-			<nav className='bg-white  w-full z-20 border-b border-gray-200'>
+			<nav className='bg-white w-full z-20 border-b border-gray-200'>
 				<div className='max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4'>
 					<a
 						href='#'
 						className='flex items-center space-x-3 rtl:space-x-reverse'
 					>
-						{/* <img src={logo} className='h-8' alt='Logo' /> */}
-						Crocosoft
+						<img src={logo} className='h-10 invert' alt='Logo' />
+						{/* QuizApp */}
 					</a>
 					<div className='flex order-2 space-x-0 rtl:space-x-reverse'>
 						<Link to={ROUTES.CREATE}>
