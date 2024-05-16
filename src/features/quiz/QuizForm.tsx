@@ -11,13 +11,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Quiz, QuizSchema } from '@/features/quiz/types';
 import { ROUTES } from '@/routes';
 import { useQuizStore } from '@/stores/quiz.provider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { Quiz, QuizSchema } from './types';
 
 const newAnswer = () => {
 	return {
@@ -48,6 +48,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 			id: data?.id ?? undefined,
 			title: data?.title ?? '',
 			description: data?.description ?? '',
+			score: data?.score ?? 0,
 			url: data?.url ?? '',
 			questions_answers: data?.questions_answers ?? [newQuestion()],
 		},
@@ -74,12 +75,12 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 		);
 	};
 
-	const handleDeleteOption = (questionId: number, answerId: number) => {
+	const handleDeleteOption = (questionIdx: number, answerIdx: number) => {
 		form.setValue(
-			`questions_answers.${questionId}.answers`,
+			`questions_answers.${questionIdx}.answers`,
 			form
-				.getValues(`questions_answers.${questionId}.answers`)
-				.filter((a) => a.id !== answerId)
+				.getValues(`questions_answers.${questionIdx}.answers`)
+				?.filter((q, index) => index !== answerIdx)
 		);
 	};
 
@@ -164,21 +165,40 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 						</FormItem>
 					)}
 				/>
+				<FormField
+					control={form.control}
+					name='score'
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Score</FormLabel>
+							<FormControl>
+								<Input
+									{...field}
+									value={Number(field.value)}
+									onChange={(e) => field.onChange(Number(e.target.value))}
+									type='number'
+									placeholder='Score'
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
 
 				{/* //*Questions */}
 				<div className=''>
 					<p className='text-sm font-semibold'>Questions & Answers</p>
-					{(questionsWatch || []).map((question, index) => (
+					{(questionsWatch || []).map((question, questionIdx) => (
 						<div
-							key={`question-${index}`}
+							key={`question-${questionIdx}`}
 							className='mb-8 mt-2 border rounded p-2 bg-slate-50'
 						>
 							<FormField
 								control={form.control}
-								name={`questions_answers.${index}.text`}
+								name={`questions_answers.${questionIdx}.text`}
 								render={({ field }) => (
 									<FormItem className='mb-4'>
-										<FormLabel>Question #{index + 1}</FormLabel>
+										<FormLabel>Question #{questionIdx + 1}</FormLabel>
 										<FormControl>
 											<Input
 												placeholder='Question'
@@ -194,14 +214,14 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 							{/* //*Answers */}
 							<div className='grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1  gap-2'>
 								{/* Render Answers */}
-								{(question.answers || []).map((answer, answerIndex) => (
-									<div key={`qestion-${index}-answer-${answerIndex}`}>
+								{(question.answers || []).map((answer, answerIdx) => (
+									<div key={`qestion-${questionIdx}-answer-${answerIdx}`}>
 										<FormField
 											control={form.control}
-											name={`questions_answers.${index}.answers.${answerIndex}.text`}
+											name={`questions_answers.${questionIdx}.answers.${answerIdx}.text`}
 											render={({ field }) => (
 												<FormItem>
-													<FormLabel>Answer #{answerIndex + 1}</FormLabel>
+													<FormLabel>Answer #{answerIdx + 1}</FormLabel>
 													<FormControl>
 														<Input
 															placeholder='Answer'
@@ -213,31 +233,34 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 												</FormItem>
 											)}
 										/>
-										<div className='flex justify-between mt-2'>
-											<div className='flex items-center justify-between space-x-2'>
-												<Switch
-													id={`questions_answers.${index}.answers.${answerIndex}`}
-													checked={answer.is_true}
-													onCheckedChange={() =>
-														markAnswerAsTrue(index, answerIndex)
-													}
-												/>
-												<Label
-													htmlFor={`questions_answers.${index}.answers.${answerIndex}`}
-												>
-													Correct answer
-												</Label>
-											</div>
-											{index !== 0 && (
+										<div className='flex space-x-4 mt-2'>
+											{question.answers.length !== 1 && (
 												<Button
-													className='mt-2 mr-2 bg-red-500 hover:bg-red-700'
+													className=' bg-red-500 hover:bg-red-700'
 													size='sm'
 													type='button'
-													onClick={() => handleDeleteQuestion(index)}
+													onClick={() =>
+														handleDeleteOption(questionIdx, answerIdx)
+													}
 												>
 													Remove Answer
 												</Button>
 											)}
+
+											<div className='flex items-center space-x-2'>
+												<Switch
+													id={`questions_answers.${questionIdx}.answers.${answerIdx}`}
+													checked={answer.is_true}
+													onCheckedChange={() =>
+														markAnswerAsTrue(questionIdx, answerIdx)
+													}
+												/>
+												<Label
+													htmlFor={`questions_answers.${questionIdx}.answers.${answerIdx}`}
+												>
+													Correct answer
+												</Label>
+											</div>
 										</div>
 									</div>
 								))}
@@ -249,22 +272,56 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 									className='mt-2 mr-2'
 									size='sm'
 									type='button'
-									onClick={() => handleAddingNewAnswerOption(index)}
+									onClick={() => handleAddingNewAnswerOption(questionIdx)}
 								>
 									Add new Answer
 								</Button>
 
-								{index !== 0 && (
+								{questionIdx !== 0 && (
 									<Button
 										className='mt-2 mr-2 bg-red-500 hover:bg-red-700'
 										size='sm'
 										type='button'
-										onClick={() => handleDeleteQuestion(index)}
+										onClick={() => handleDeleteQuestion(questionIdx)}
 									>
 										Remove Question
 									</Button>
 								)}
 							</div>
+							<FormField
+								control={form.control}
+								name={`questions_answers.${questionIdx}.feedback_true`}
+								render={({ field }) => (
+									<FormItem className='mt-4'>
+										<FormLabel>Feedback true</FormLabel>
+										<FormControl>
+											<Input
+												placeholder='Feedback true'
+												{...field}
+												className='bg-white'
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name={`questions_answers.${questionIdx}.feedback_false`}
+								render={({ field }) => (
+									<FormItem className='mt-4'>
+										<FormLabel>Feedback false</FormLabel>
+										<FormControl>
+											<Input
+												placeholder='Feedback false'
+												{...field}
+												className='bg-white'
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 						</div>
 					))}
 				</div>

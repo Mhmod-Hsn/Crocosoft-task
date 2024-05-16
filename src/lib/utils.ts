@@ -5,6 +5,10 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
+export const generateId = () => {
+	return Math.random().toString().substring(2, 15);
+};
+
 export const padNumber = (n: number) => {
 	return n.toString().padStart(2, '0');
 };

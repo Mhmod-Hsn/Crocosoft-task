@@ -3,28 +3,32 @@ import { z } from 'zod';
 const QuizAnswerSchema = z.object({
 	id: z.number(),
 	is_true: z.boolean(),
-	text: z.string(),
+	text: z.string().min(1),
 });
 
 const QuizQuestionSchema = z.object({
 	answer_id: z.null(),
 	answers: z.array(QuizAnswerSchema),
-	feedback_false: z.string(),
-	feedback_true: z.string(),
+	feedback_false: z.string().min(1),
+	feedback_true: z.string().min(1),
 	id: z.number(),
-	text: z.string(),
+	text: z.string().min(1),
 });
 
 export const QuizSchema = z.object({
-	created: z.string().optional(),
-	description: z.string().min(1),
 	id: z.number().optional(),
-	modified: z.string().optional(),
-	questions_answers: z.array(QuizQuestionSchema).optional(),
-	score: z.number().optional(),
 	title: z.string().min(1),
+	description: z.string().min(1),
+	score: z.number().min(0).max(100).optional(),
 	// make sure url is youtube url
-	url: z.string().regex(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+/),
+	url: z
+		.string()
+		.url()
+		.regex(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+/),
+
+	questions_answers: z.array(QuizQuestionSchema),
+	created: z.string().optional(),
+	modified: z.string().optional(),
 });
 
 export type QuizAnswer = {
