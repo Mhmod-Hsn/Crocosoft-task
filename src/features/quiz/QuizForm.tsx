@@ -69,10 +69,12 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 		]);
 	};
 
-	const handleDeleteQuestion = (id: number) => {
+	const handleDeleteQuestion = (questionIdx: number) => {
 		form.setValue(
 			'questions_answers',
-			form.getValues('questions_answers')?.filter((q) => q.id !== id)
+			form
+				.getValues('questions_answers')
+				?.filter((_, index) => index !== questionIdx)
 		);
 	};
 
@@ -323,12 +325,24 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 									</FormItem>
 								)}
 							/>
+							{questionsWatch.length !== 1 && (
+								<Button
+									className='mt-2 mr-2 bg-red-500 hover:bg-red-700'
+									size='sm'
+									type='button'
+									onClick={() => handleDeleteQuestion(questionIdx)}
+								>
+									Remove Question
+								</Button>
+							)}
 						</div>
 					))}
 				</div>
-				<Button size='sm' type='button' onClick={handleAddingNewQuestion}>
-					Add new question
-				</Button>
+				<div>
+					<Button size='sm' type='button' onClick={handleAddingNewQuestion}>
+						Add new question
+					</Button>
+				</div>
 
 				<div className='flex justify-end mt-6 pt-4 border-t '>
 					<Button type='submit' disabled={form.formState.isSubmitting}>
