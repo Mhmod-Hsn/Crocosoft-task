@@ -16,6 +16,7 @@ import { generateId } from '@/lib/utils';
 import { ROUTES } from '@/routes';
 import { useQuizStore } from '@/stores/quiz.provider';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -236,16 +237,18 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 												</FormItem>
 											)}
 										/>
-										<div className='flex space-x-4 mt-2'>
+										<div className='flex space-x-4 items-center mt-2'>
 											{question.answers.length !== 1 && (
 												<Button
-													className=' bg-red-500 hover:bg-red-700'
+													className=' text-red-700'
 													size='sm'
+													variant='link'
 													type='button'
 													onClick={() =>
 														handleDeleteOption(questionIdx, answerIdx)
 													}
 												>
+													<X size={16} className='mr-2' />
 													Remove Answer
 												</Button>
 											)}
@@ -259,6 +262,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 													}
 												/>
 												<Label
+													className='text-sm'
 													htmlFor={`questions_answers.${questionIdx}.answers.${answerIdx}`}
 												>
 													Correct answer
@@ -270,26 +274,14 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 							</div>
 
 							{/* //* Answer Actions */}
-							<div className='mt-4 flex gap2'>
+							<div className='mt-4 flex gap-2'>
 								<Button
-									className='mt-2 mr-2'
 									size='sm'
 									type='button'
 									onClick={() => handleAddingNewAnswerOption(questionIdx)}
 								>
 									Add new Answer
 								</Button>
-
-								{questionIdx !== 0 && (
-									<Button
-										className='mt-2 mr-2 bg-red-500 hover:bg-red-700'
-										size='sm'
-										type='button'
-										onClick={() => handleDeleteQuestion(questionIdx)}
-									>
-										Remove Question
-									</Button>
-								)}
 							</div>
 							<FormField
 								control={form.control}
@@ -327,11 +319,13 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 							/>
 							{questionsWatch.length !== 1 && (
 								<Button
-									className='mt-2 mr-2 bg-red-500 hover:bg-red-700'
+									className='mt-2 mr-2 text-red-700'
 									size='sm'
+									variant='link'
 									type='button'
 									onClick={() => handleDeleteQuestion(questionIdx)}
 								>
+									<X size={16} className='mr-2' />
 									Remove Question
 								</Button>
 							)}
@@ -346,11 +340,16 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 
 				<div className='flex justify-end mt-6 pt-4 border-t '>
 					<Button type='submit' disabled={form.formState.isSubmitting}>
-						{form.formState.isSubmitting
-							? 'Loading...'
-							: isEdit
-							? 'Update'
-							: 'Create'}
+						{form.formState.isSubmitting ? (
+							<>
+								<Loader2 className='mr-2 h-4 w-4 animate-spin' />
+								Loading...
+							</>
+						) : isEdit ? (
+							'Update'
+						) : (
+							'Create'
+						)}
 					</Button>
 				</div>
 			</form>
