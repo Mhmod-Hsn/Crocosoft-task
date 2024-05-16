@@ -16,7 +16,7 @@ import { generateId } from '@/lib/utils';
 import { ROUTES } from '@/routes';
 import { useQuizStore } from '@/stores/quiz.provider';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, X } from 'lucide-react';
+import { Loader2, Plus, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -238,7 +238,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 											)}
 										/>
 										<div className='flex space-x-4 items-center mt-2'>
-											<div className='flex items-center space-x-2'>
+											<div className='flex items-center space-x-2 h-8'>
 												<Switch
 													id={`questions_answers.${questionIdx}.answers.${answerIdx}`}
 													checked={answer.is_true}
@@ -255,9 +255,9 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 											</div>
 											{question.answers.length !== 1 && (
 												<Button
-													className=' text-red-700 h-4'
+													className='text-red-700'
 													size='sm'
-													variant='link'
+													variant='ghost'
 													type='button'
 													onClick={() =>
 														handleDeleteOption(questionIdx, answerIdx)
@@ -277,8 +277,10 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 								<Button
 									size='sm'
 									type='button'
+									variant='ghost'
 									onClick={() => handleAddingNewAnswerOption(questionIdx)}
 								>
+									<Plus size={16} className='mr-2' />
 									Add new Answer
 								</Button>
 							</div>
@@ -320,7 +322,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 								<Button
 									className='mt-2 mr-2 text-red-700'
 									size='sm'
-									variant='link'
+									variant='ghost'
 									type='button'
 									onClick={() => handleDeleteQuestion(questionIdx)}
 								>
@@ -332,7 +334,13 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 					))}
 				</div>
 				<div>
-					<Button size='sm' type='button' onClick={handleAddingNewQuestion}>
+					<Button
+						size='sm'
+						variant='ghost'
+						type='button'
+						onClick={handleAddingNewQuestion}
+					>
+						<Plus size={16} className='mr-2' />
 						Add new question
 					</Button>
 				</div>
