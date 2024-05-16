@@ -13,10 +13,9 @@ export const ListQuizzes = () => {
 	);
 
 	return (
-		<div className='flex flex-col gap-3 p-3'>
+		<div className='grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-3 p-3'>
 			{orderedQuizzes.map((quiz) => (
 				<Link key={quiz.id} to={`/${ROUTES.QUIZ}/${quiz.id}`}>
-					{quiz.id}
 					<SingleQuizCard data={quiz} />
 				</Link>
 			))}
