@@ -12,7 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Quiz, QuizSchema } from '@/features/quiz/types';
+import { Quiz, QuizFormSchemaType, QuizSchema } from '@/features/quiz/types';
 import { generateId } from '@/lib/utils';
 import { ROUTES } from '@/routes';
 import { useQuizStore } from '@/stores/quiz.provider';
@@ -20,32 +20,21 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Plus, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-
-const newAnswer = (isTrue: boolean = false) => {
-	return {
-		id: generateId(),
-		text: '',
-		is_true: isTrue,
-	};
-};
-const newQuestion = () => {
-	return {
-		id: generateId(),
-		text: '',
-		answer_id: null,
-		feedback_false: '',
-		feedback_true: '',
-		answers: [newAnswer(true)],
-	};
-};
+import {
+	handleAddingNewAnswerOption,
+	handleAddingNewQuestion,
+	handleDeleteOption,
+	handleDeleteQuestion,
+	markAnswerAsTrue,
+	newQuestion,
+} from './utils';
 
 export const QuizForm = ({ data }: { data?: Quiz }) => {
 	const isEdit = !!data;
 	const { createQuiz, updateQuiz } = useQuizStore((store) => store);
 	const navigate = useNavigate();
 
-	const form = useForm<z.infer<typeof QuizSchema>>({
+	const form = useForm<QuizFormSchemaType>({
 		resolver: zodResolver(QuizSchema),
 		defaultValues: {
 			id: data?.id ?? generateId(),
@@ -59,59 +48,9 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 		},
 	});
 
-	const handleAddingNewQuestion = () => {
-		form.setValue('questions_answers', [
-			...(form.getValues('questions_answers') || []),
-			newQuestion(),
-		]);
-	};
-
-	const handleAddingNewAnswerOption = (id: number) => {
-		form.setValue(`questions_answers.${id}.answers`, [
-			...(form.getValues(`questions_answers.${id}.answers`) || []),
-			newAnswer(),
-		]);
-	};
-
-	const handleDeleteQuestion = (questionIdx: number) => {
-		form.setValue(
-			'questions_answers',
-			form
-				.getValues('questions_answers')
-				?.filter((_, index) => index !== questionIdx)
-		);
-	};
-
-	const handleDeleteOption = (questionIdx: number, answerIdx: number) => {
-		form.setValue(
-			`questions_answers.${questionIdx}.answers`,
-			form
-				.getValues(`questions_answers.${questionIdx}.answers`)
-				?.filter((_, index) => index !== answerIdx)
-		);
-	};
-
-	const markAnswerAsTrue = (questionIdx: number, answerIdx: number) => {
-		// disable other answers
-		const answers =
-			form.getValues(`questions_answers.${questionIdx}.answers`) || [];
-		answers.forEach((_, index) => {
-			form.setValue(
-				`questions_answers.${questionIdx}.answers.${index}.is_true`,
-				false
-			);
-		});
-
-		// set correct value
-		form.setValue(
-			`questions_answers.${questionIdx}.answers.${answerIdx}.is_true`,
-			true
-		);
-	};
-
 	const questionsWatch = form.watch('questions_answers');
 
-	async function onSubmit(values: z.infer<typeof QuizSchema>) {
+	async function onSubmit(values: QuizFormSchemaType) {
 		// ✅ This will be type-safe and validated.
 		console.log(values);
 		// fake waiting
@@ -124,7 +63,6 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 				}
 
 				navigate(ROUTES.HOME);
-
 				resolve(null);
 			}, 1000)
 		);
@@ -238,7 +176,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 													id={`questions_answers.${questionIdx}.answers.${answerIdx}`}
 													checked={answer.is_true}
 													onCheckedChange={() =>
-														markAnswerAsTrue(questionIdx, answerIdx)
+														markAnswerAsTrue(form, questionIdx, answerIdx)
 													}
 												/>
 												<Label
@@ -259,7 +197,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 														variant='ghost'
 														type='button'
 														onClick={() =>
-															handleDeleteOption(questionIdx, answerIdx)
+															handleDeleteOption(form, questionIdx, answerIdx)
 														}
 													>
 														<X size={16} className='mr-2' />
@@ -277,7 +215,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 									size='sm'
 									type='button'
 									variant='ghost'
-									onClick={() => handleAddingNewAnswerOption(questionIdx)}
+									onClick={() => handleAddingNewAnswerOption(form, questionIdx)}
 								>
 									<Plus size={16} className='mr-2' />
 									Add new Answer
@@ -323,7 +261,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 									size='sm'
 									variant='ghost'
 									type='button'
-									onClick={() => handleDeleteQuestion(questionIdx)}
+									onClick={() => handleDeleteQuestion(form, questionIdx)}
 								>
 									<X size={16} className='mr-2' />
 									Remove Question
@@ -337,7 +275,7 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 						size='sm'
 						variant='ghost'
 						type='button'
-						onClick={handleAddingNewQuestion}
+						onClick={() => handleAddingNewQuestion(form)}
 					>
 						<Plus size={16} className='mr-2' />
 						Add new question

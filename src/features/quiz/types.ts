@@ -31,6 +31,8 @@ export const QuizSchema = z.object({
 	modified: z.string().optional(),
 });
 
+export type QuizFormSchemaType = z.infer<typeof QuizSchema>;
+
 export type QuizAnswer = {
 	id: number;
 	is_true: boolean;
