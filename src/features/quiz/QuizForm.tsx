@@ -9,20 +9,24 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { ROUTES } from '@/routes';
 import { useQuizStore } from '@/stores/quiz.provider';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { Quiz, QuizSchema } from './types';
 
 export const QuizForm = ({ data }: { data?: Quiz }) => {
-	const { createQuiz } = useQuizStore((store) => store);
+	const { createQuiz, updateQuiz } = useQuizStore((store) => store);
+	const navigate = useNavigate();
 
 	const isEdit = !!data;
 
 	const form = useForm<z.infer<typeof QuizSchema>>({
 		resolver: zodResolver(QuizSchema),
 		defaultValues: {
+			id: data?.id ?? undefined,
 			title: data?.title ?? '',
 			description: data?.description ?? '',
 			url: data?.url ?? '',
@@ -31,10 +35,23 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 	});
 
 	console.log('Errors: ', form.formState.errors);
-	function onSubmit(values: z.infer<typeof QuizSchema>) {
+	async function onSubmit(values: z.infer<typeof QuizSchema>) {
 		// ✅ This will be type-safe and validated.
 		console.log(values);
-		setTimeout(() => createQuiz(values), 1000);
+		// fake waiting
+		await new Promise((resolve) =>
+			setTimeout(() => {
+				if (isEdit) {
+					updateQuiz(values);
+				} else {
+					createQuiz(values);
+				}
+
+				navigate(ROUTES.HOME);
+
+				resolve(null);
+			}, 1000)
+		);
 	}
 
 	return (
@@ -79,8 +96,12 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 						</FormItem>
 					)}
 				/>
-				<Button type='submit'>
-					{form.formState.isSubmitting ? 'Loading...' : 'Submit'}
+				<Button type='submit' disabled={form.formState.isSubmitting}>
+					{form.formState.isSubmitting
+						? 'Loading...'
+						: isEdit
+						? 'Update'
+						: 'Create'}
 				</Button>
 			</form>
 		</Form>

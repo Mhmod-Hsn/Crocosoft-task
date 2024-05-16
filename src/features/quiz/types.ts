@@ -17,12 +17,12 @@ const QuizQuestionSchema = z.object({
 
 export const QuizSchema = z.object({
 	created: z.string().optional(),
-	description: z.string(),
+	description: z.string().min(1),
 	id: z.number().optional(),
 	modified: z.string().optional(),
 	questions_answers: z.array(QuizQuestionSchema).optional(),
 	score: z.number().optional(),
-	title: z.string(),
+	title: z.string().min(1),
 	// make sure url is youtube url
 	url: z.string().regex(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+/),
 });

@@ -9,13 +9,13 @@ export const Navbar = () => {
 		<>
 			<nav className='bg-white w-full z-20 border-b border-gray-200'>
 				<div className='max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4'>
-					<a
-						href='#'
+					<Link
+						to={ROUTES.HOME}
 						className='flex items-center space-x-3 rtl:space-x-reverse'
 					>
 						<img src={logo} className='h-10 invert' alt='Logo' />
 						{/* QuizApp */}
-					</a>
+					</Link>
 					<div className='flex order-2 space-x-0 rtl:space-x-reverse'>
 						<Link to={ROUTES.CREATE}>
 							<Button type='button'>Create</Button>

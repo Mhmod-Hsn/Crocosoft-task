@@ -38,6 +38,20 @@ const reducers = (set: any, get: any) => ({
 		});
 	},
 
+	updateQuiz: (data: Quiz) => {
+		set({
+			quizzes: get().quizzes.map((quiz: Quiz) => {
+				if (quiz.id === data.id) {
+					return {
+						...data,
+						modified: getCurrentDateTime(),
+					};
+				}
+				return quiz;
+			}),
+		});
+	},
+
 	getQuiz: (id: number) => {
 		return get().quizzes.find((quiz: Quiz) => quiz.id === id) || null;
 	},
@@ -45,7 +59,7 @@ const reducers = (set: any, get: any) => ({
 		set({
 			quizzes: get().quizzes.filter((quiz: Quiz) => quiz.id !== id),
 		});
-	}
+	},
 });
 export const createQuizStore = (initState: State = initialState) =>
 	create(
