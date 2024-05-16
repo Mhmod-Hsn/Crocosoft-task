@@ -8,7 +8,7 @@ export const Navbar = () => {
 	return (
 		<>
 			<nav className='bg-white w-full z-20 border-b border-gray-200'>
-				<div className='max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-2'>
+				<div className='flex flex-wrap items-center justify-between mx-auto p-2'>
 					<div className='flex items-center'>
 						<img src={logo} className='h-12 invert' alt='Logo' />
 						<div

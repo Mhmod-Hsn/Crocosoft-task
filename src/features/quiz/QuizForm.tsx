@@ -54,6 +54,8 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 			score: data?.score ?? 0,
 			url: data?.url ?? '',
 			questions_answers: data?.questions_answers ?? [newQuestion()],
+			modified: data?.modified ?? '',
+			created: data?.created ?? '',
 		},
 	});
 
