@@ -10,24 +10,16 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Quiz, QuizFormSchemaType, QuizSchema } from '@/features/quiz/types';
 import { generateId } from '@/lib/utils';
 import { ROUTES } from '@/routes';
 import { useQuizStore } from '@/stores/quiz.provider';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, Plus, X } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import {
-	handleAddingNewAnswerOption,
-	handleAddingNewQuestion,
-	handleDeleteOption,
-	handleDeleteQuestion,
-	markAnswerAsTrue,
-	newQuestion,
-} from './utils';
+import { QuizFormQuestion } from './components/QuizFormQuestion';
+import { handleAddingNewQuestion, newQuestion } from './utils';
 
 export const QuizForm = ({ data }: { data?: Quiz }) => {
 	const isEdit = !!data;
@@ -126,148 +118,12 @@ export const QuizForm = ({ data }: { data?: Quiz }) => {
 				<div className=''>
 					<p className='text-sm font-semibold'>Questions & Answers</p>
 					{(questionsWatch || []).map((question, questionIdx) => (
-						<div
+						<QuizFormQuestion
 							key={`question-${questionIdx}`}
-							className='mb-8 mt-2 border rounded p-2 bg-slate-50'
-						>
-							<FormField
-								control={form.control}
-								name={`questions_answers.${questionIdx}.text`}
-								render={({ field }) => (
-									<FormItem className='mb-4'>
-										<FormLabel>Question #{questionIdx + 1}</FormLabel>
-										<FormControl>
-											<Input
-												placeholder='Question'
-												{...field}
-												className='bg-white'
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							{/* //*Answers */}
-							<div className='grid xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 grid-cols-1  gap-2'>
-								{/* Render Answers */}
-								{(question.answers || []).map((answer, answerIdx) => (
-									<div key={`qestion-${questionIdx}-answer-${answerIdx}`}>
-										<FormField
-											control={form.control}
-											name={`questions_answers.${questionIdx}.answers.${answerIdx}.text`}
-											render={({ field }) => (
-												<FormItem>
-													<FormLabel>Answer #{answerIdx + 1}</FormLabel>
-													<FormControl>
-														<Input
-															placeholder='Answer'
-															{...field}
-															className='bg-white'
-														/>
-													</FormControl>
-													<FormMessage />
-												</FormItem>
-											)}
-										/>
-										<div className='flex space-x-4 items-center mt-2'>
-											<div className='flex items-center space-x-2 h-8'>
-												<Switch
-													id={`questions_answers.${questionIdx}.answers.${answerIdx}`}
-													checked={answer.is_true}
-													onCheckedChange={() =>
-														markAnswerAsTrue(form, questionIdx, answerIdx)
-													}
-												/>
-												<Label
-													className='text-sm'
-													htmlFor={`questions_answers.${questionIdx}.answers.${answerIdx}`}
-												>
-													Correct answer
-												</Label>
-											</div>
-											{/* dont delete the correct answer */}
-											{question.answers.length !== 1 &&
-												!form.getValues(
-													`questions_answers.${questionIdx}.answers.${answerIdx}.is_true`
-												) && (
-													<Button
-														className='text-red-700'
-														size='sm'
-														variant='ghost'
-														type='button'
-														onClick={() =>
-															handleDeleteOption(form, questionIdx, answerIdx)
-														}
-													>
-														<X size={16} className='mr-2' />
-														Remove Answer
-													</Button>
-												)}
-										</div>
-									</div>
-								))}
-							</div>
-
-							{/* //* Answer Actions */}
-							<div className='mt-4 flex gap-2'>
-								<Button
-									size='sm'
-									type='button'
-									variant='ghost'
-									onClick={() => handleAddingNewAnswerOption(form, questionIdx)}
-								>
-									<Plus size={16} className='mr-2' />
-									Add new Answer
-								</Button>
-							</div>
-							<FormField
-								control={form.control}
-								name={`questions_answers.${questionIdx}.feedback_true`}
-								render={({ field }) => (
-									<FormItem className='mt-4'>
-										<FormLabel>Feedback true</FormLabel>
-										<FormControl>
-											<Input
-												placeholder='Feedback true'
-												{...field}
-												className='bg-white'
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name={`questions_answers.${questionIdx}.feedback_false`}
-								render={({ field }) => (
-									<FormItem className='mt-4'>
-										<FormLabel>Feedback false</FormLabel>
-										<FormControl>
-											<Input
-												placeholder='Feedback false'
-												{...field}
-												className='bg-white'
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-							{questionsWatch.length !== 1 && (
-								<Button
-									className='mt-2 mr-2 text-red-700'
-									size='sm'
-									variant='ghost'
-									type='button'
-									onClick={() => handleDeleteQuestion(form, questionIdx)}
-								>
-									<X size={16} className='mr-2' />
-									Remove Question
-								</Button>
-							)}
-						</div>
+							form={form}
+							question={question}
+							index={questionIdx}
+						/>
 					))}
 				</div>
 				<div>

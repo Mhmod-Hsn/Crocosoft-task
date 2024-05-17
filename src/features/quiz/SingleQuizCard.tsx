@@ -24,7 +24,7 @@ export const SingleQuizCard = ({
 		navigate(0);
 	};
 	return (
-		<div className='relative group border mb-2 p-4 rounded hover:bg-slate-300/10 hover:shadow-md'>
+		<div className='relative group border mb-2 p-4 rounded hover:bg-slate-300/10 hover:shadow-md transition-all'>
 			<div className='flex justify-between items-center'>
 				<h6 className='font-semibold'>{title}</h6>
 				<p className='text-xs'>{modified}</p>
@@ -32,7 +32,7 @@ export const SingleQuizCard = ({
 			<p className='text-sm'>{description}</p>
 			<p className='font-bold mt-2'>{questions_answers.length} Questions</p>
 			<Button
-				className='bg-red-500 hover:bg-red-700 
+				className='bg-red-700 hover:bg-red-800 
         absolute bottom-2 right-2 opacity-0 group-hover:opacity-100'
 				size={'sm'}
 				onClick={handleDelete}
